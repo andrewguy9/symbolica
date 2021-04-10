@@ -16,3 +16,11 @@
   (-> (dom/getDocument)
     .-body
     (dom/appendChild element)))
+
+(let [yay (js/yayQuery)
+      element (dom/createDom "div" "some-class" (.getMessage yay))]
+  (classes/enable element "another-class" true)
+  (-> (dom/getDocument)
+    .-body
+    (dom/appendChild element))
+  )

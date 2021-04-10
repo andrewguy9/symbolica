@@ -4,10 +4,10 @@ Based on ClojureScript [getting started](https://clojurescript.org/guides/quick-
 
 ## dev repl
 
-`clj --main cljs.main --compile symbolica.core --repl`
+`clj --main cljs.main -co build.edn --compile symbolica.core --repl`
 
 ## production build
-`clj -m cljs.main --optimizations advanced -c symbolica.core`
+`clj --main cljs.main -co build.edn --optimizations advanced --compile symbolica.core`
 
 ## production server
 `clj -m cljs.main --serve`
