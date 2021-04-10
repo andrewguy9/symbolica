@@ -2,4 +2,6 @@
  :output-to "out/main.js"
  :externs ["yayquery-externs.js"]
  :libs ["src/closure"]
+ :foreign-libs [{:file "src/js/calc.js"
+                 :provides ["calc"]}]
  }

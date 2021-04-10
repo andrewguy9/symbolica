@@ -4,6 +4,7 @@
             [goog.dom.classes :as classes]
             [goog.events :as events]
             [yq]
+            [calc]
             )
   (:import [goog Timer]))
 
@@ -24,5 +25,10 @@
 (dom/replaceNode
   (dom/createTextNode (.getMessage (yq/yayQuery)))
   (dom/getElement "library-closure")
+  )
+
+(dom/replaceNode
+  (dom/createTextNode (str "1+2 is " (js/add 1 2)))
+  (dom/getElement "js-library")
   )
 
