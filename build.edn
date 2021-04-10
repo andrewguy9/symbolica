@@ -1,4 +1,5 @@
 {:verbose true
  :output-to "out/main.js"
  :externs ["yayquery-externs.js"]
+ :libs ["src/closure"]
  }

@@ -2,7 +2,9 @@
   (:require react-dom
             [goog.dom :as dom]
             [goog.dom.classes :as classes]
-            [goog.events :as events])
+            [goog.events :as events]
+            [yq]
+            )
   (:import [goog Timer]))
 
 (.render js/ReactDOM
@@ -17,5 +19,10 @@
 (dom/replaceNode
   (dom/createTextNode (.getMessage (js/yayQuery)))
   (dom/getElement "external-js")
+  )
+
+(dom/replaceNode
+  (dom/createTextNode (.getMessage (yq/yayQuery)))
+  (dom/getElement "library-closure")
   )
 
