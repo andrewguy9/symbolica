@@ -11,12 +11,19 @@
                       console.log(message);
                     }
               yay.getMessage = function() {
-                      return 'Hello, Javascript world!';
+                      return 'Hello, from external Javascript!';
                     }
               return yay;
             };
     </script>
-    <div id="app"> </div>
+
+    Clojure React says: <div id="clojure-react"></div>
+    <br>
+    Google Closure says: <div id="google-closure"></div>
+    <br>
+    external JS says: <div id="external-js"></div>
+    <br>
+
     <script src="out/main.js" type="text/javascript"></script>
   </body>
 </html>

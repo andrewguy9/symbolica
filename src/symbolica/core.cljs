@@ -5,22 +5,17 @@
             [goog.events :as events])
   (:import [goog Timer]))
 
-(println "Hello ClojureScript React!")
-
 (.render js/ReactDOM
-         (.createElement js/React "h2" nil "Hello, React!")
-         (.getElementById js/document "app"))
+         (.createElement js/React "span" nil "Hello from Clojure React!")
+         (.getElementById js/document "clojure-react"))
 
-(let [element (dom/createDom "div" "some-class" "Hello Google Closure")]
-  (classes/enable element "another-class" true)
-  (-> (dom/getDocument)
-    .-body
-    (dom/appendChild element)))
-
-(let [yay (js/yayQuery)
-      element (dom/createDom "div" "some-class" (.getMessage yay))]
-  (classes/enable element "another-class" true)
-  (-> (dom/getDocument)
-    .-body
-    (dom/appendChild element))
+(dom/replaceNode
+  (dom/createTextNode "Hello from Google Closure")
+  (dom/getElement "google-closure")
   )
+
+(dom/replaceNode
+  (dom/createTextNode (.getMessage (js/yayQuery)))
+  (dom/getElement "external-js")
+  )
+
