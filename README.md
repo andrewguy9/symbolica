@@ -1,5 +1,7 @@
 Based on ClojureScript [getting started](https://clojurescript.org/guides/quick-start#clojurescript-compile)
 
+Dependency work derived from [Dependencies guide](https://clojurescript.org/reference/dependencies)
+
 Figwheel integration [tutorial](https://figwheel.org/tutorial.html)
 
 # Running

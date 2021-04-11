@@ -1,4 +1,5 @@
 ^{:css-dirs ["resources/public/css"]}
+; Options documented here: https://clojurescript.org/reference/compiler-options
 {:main symbolica.core
  :verbose true
  :externs ["yayquery-externs.js"]
