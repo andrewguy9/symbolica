@@ -1,13 +1,18 @@
 Based on ClojureScript [getting started](https://clojurescript.org/guides/quick-start#clojurescript-compile)
 
+Figwheel integration [tutorial](https://figwheel.org/tutorial.html)
+
 # Running
 
 ## dev repl
 
-`clj --main cljs.main -co build.edn --compile symbolica.core --repl`
+Explicit: `clojure --main figwheel.main -co dev.cljs.edn --compile --repl`
+
+Shortcut: `clojure -A:build-dev`
+
 
 ## production build
-`clj --main cljs.main -co build.edn --optimizations advanced --compile symbolica.core`
+`clojure --main figwheel.main -co dev.cljs.edn --optimizations advanced --compile`
 
 ## production server
-`clj -m cljs.main --serve`
+`clojure -m figwheel.main --serve`

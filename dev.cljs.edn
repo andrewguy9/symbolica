@@ -1,5 +1,6 @@
-{:verbose true
- :output-to "out/main.js"
+^{:css-dirs ["resources/public/css"]}
+{:main symbolica.core
+ :verbose true
  :externs ["yayquery-externs.js"]
  :libs ["src/closure"]
  :foreign-libs [{:file "src/js/calc.js"

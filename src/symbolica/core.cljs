@@ -12,23 +12,16 @@
          (.createElement js/React "span" nil "Hello from Clojure React!")
          (.getElementById js/document "clojure-react"))
 
-(dom/replaceNode
-  (dom/createTextNode "Hello from Google Closure")
-  (dom/getElement "google-closure")
-  )
+(defn replace_div [id, inner]
+  (dom/replaceNode
+    (dom/createDom "div" (clj->js {"id" id}) inner)
+    (dom/getElement id)))
 
-(dom/replaceNode
-  (dom/createTextNode (.getMessage (js/yayQuery)))
-  (dom/getElement "external-js")
-  )
+(replace_div "google-closure" "google clojure says hi")
 
-(dom/replaceNode
-  (dom/createTextNode (.getMessage (yq/yayQuery)))
-  (dom/getElement "library-closure")
-  )
+(replace_div "external-js" (.getMessage (js/yayQuery)))
 
-(dom/replaceNode
-  (dom/createTextNode (str "1+2 is " (js/add 1 2)))
-  (dom/getElement "js-library")
-  )
+(replace_div "library-closure" (.getMessage (yq/yayQuery)))
+
+(replace_div "js-library" (str "1+2 == " (js/add 1 2)))
 
