@@ -10,6 +10,7 @@
             [clojure.core]
             [reagent.core :as r]
             [reagent.dom :as rd]
+            [clojure.spec.alpha :as s]
             )
   (:import [goog Timer]))
 
@@ -39,21 +40,35 @@
                 <mul-div> = term | mul | div
                 mul = mul-div <'*'> term
                 div = mul-div <'/'> term
-                <term> = number | <'('> add-sub <')'>
+                <term> = number | variable | <'('> add-sub <')'>
                 number = #'[0-9]+'
+                variable = #'[a-zA-Z][a-zA-Z0-9]*'
                 "))
+
+(s/def ::num (s/tuple #{:number} string?))
+(s/def ::sum_nums (s/tuple #{:add} ::num ::num))
+(s/def ::expr_sum_nums (s/tuple #{:expr} ::sum_nums))
+
+(defn math_simplify [ast]
+  (with-out-str (s/conform ::expr_sum_nums ast))
+  )
 
 (defn math_eval [ast]
   (->> ast
      (insta/transform
        {:add +, :sub -, :mul *, :div /, :number cljs.tools.reader/read-string :expr identity})))
 
-(let [text "1-2/(3-4)+5*6"
-      ast (math text)
-      result (math_eval ast)]
-  (rd/render [:div
-              [:p text]
-              [:p (with-out-str (pp/pprint ast))]
-              [:p result]
+(let [text "1+2" ; "1-2/(3-4)+5*6"
+      ast       (math text)
+      valid     (s/valid? ::expr_sum_nums ast)
+      conformed (s/conform ::expr_sum_nums ast)
+      explained (s/explain ::expr_sum_nums ast)
+      ]
+  (rd/render [:table {:border "1px solid black" }
+              [:tr [:td "text"]      [:td [:pre text]]]
+              [:tr [:td "ast"]       [:td (with-out-str (pp/pprint ast))]]
+              [:tr [:td "valid"]     [:td (with-out-str (pp/pprint valid))]]
+              [:tr [:td "conformed"] [:td (with-out-str (pp/pprint conformed))]]
+              [:tr [:td "explain"]   [:td (with-out-str (pp/pprint explained))]]
               ]
              (js/document.getElementById "parse-test")))
