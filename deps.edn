@@ -3,6 +3,7 @@
         com.bhauman/figwheel-main {:mvn/version "0.2.12"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
         instaparse/instaparse {:mvn/version "1.4.10"}
+        reagent/reagent {:mvn/version "1.0.0"}
         }
  :paths ["src", "target", "resources"]
  :aliases {:build-dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}
