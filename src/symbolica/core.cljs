@@ -91,10 +91,22 @@
        (-> conformed :right :left :number int)))]
    [:variable (-> conformed :left :right :name)]])
 
+
+(s/def ::sum_order (s/cat :operator #{:add}
+                         :left  (s/and ::num)
+                         :right (s/and ::product)))
+(defn simplify_sum_order [conformed]
+  [:add
+   [:mul [:number (-> conformed :right :left :number)] [:variable (-> conformed :right :right :name)]]
+   [:number (-> conformed :left :number)]])
+
+(def sum_order_spec ::sum_order)
+
 (def simplifications
   [[::sum_nums simplify_sum_nums]
    [::product_order simplify_product_order]
-   [::product_sum simplify_product_sum]])
+   [::product_sum simplify_product_sum]
+   [::sum_order simplify_sum_order]])
 
 (defn simplify_step [ast spec, reducer]
   ;(println "math_simplify" ast spec)
