@@ -69,6 +69,7 @@
                          :left  (s/and ::var)
                          :right (s/and ::num)))
 (def product_order_spec ::product_order)
+
 (defn simplify_product_order [conformed]
   [:mul
    [:number   (-> conformed :right :number)]
@@ -119,7 +120,7 @@
         ]
     (case tag
       :expr     (math_render (first children))
-      :add      (str (math_render (first children)) "*" (math_render (second children)))
+      :add      (str (math_render (first children)) "+" (math_render (second children)))
       :sub      (str (math_render (first children)) "-" (math_render (second children)))
       :mul      (str (math_render (first children)) "*" (math_render (second children)))
       :div      (str (math_render (first children)) "/" (math_render (second children)))
@@ -128,6 +129,8 @@
       ""
       )))
 
+(defonce input (r/atom "1"))
+
 (defn atom-input [value]
   [:pre [:input {:type "text"
                  :value @value
@@ -135,15 +138,14 @@
                  :on-change #(reset! value (-> % .-target .-value))}]])
 
 (defn math-table []
-  (let [val (r/atom "1")]
-    (fn []
-      [:table {:border "1px solid black" }
-       [:tr [:td "input"]    [:td [atom-input val]]]
-       [:tr [:td "str"]       [:td [:pre @val]]]
-       [:tr [:td "ast"]        [:td [:pre (with-out-str (pp/pprint (math @val)))]]]
-       [:tr [:td "simplified"] [:td [:pre (with-out-str (pp/pprint (clojure.walk/postwalk math_simplify (math @val))))]]]
-       [:tr [:td "rendered"]   [:td [:pre (math_render (clojure.walk/postwalk math_simplify (math @val)))]]]
-       ])))
+  (fn []
+    [:table {:border "1px solid black" }
+     [:tr [:td "input"]    [:td [atom-input input]]]
+     [:tr [:td "str"]       [:td [:pre @input]]]
+     [:tr [:td "ast"]        [:td [:pre (with-out-str (pp/pprint (math @input)))]]]
+     [:tr [:td "simplified"] [:td [:pre (with-out-str (pp/pprint (clojure.walk/postwalk math_simplify (math @input))))]]]
+     [:tr [:td "rendered"]   [:td [:pre (math_render (clojure.walk/postwalk math_simplify (math @input)))]]]
+     ]))
 
 (let [text "2*x+3*x"; "x*5+2*x+1+2";"1+2+3" ; "1-2/(3-4)+5*6"
       ast        (math text)
