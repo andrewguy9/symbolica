@@ -8,6 +8,7 @@
             [instaparse.core :as insta]
             [clojure.pprint :as pp]
             [clojure.core]
+            [clojure.walk]
             [reagent.core :as r]
             [reagent.dom :as rd]
             [clojure.spec.alpha :as s]
@@ -62,10 +63,14 @@
        (-> conformed :sum :right :number int)))]])
 
 (defn math_simplify [ast]
-  (let [conformed (s/conform ::expr_sum_nums ast)]
-    (if conformed
-      (simplify_expr_sum_nums conformed)
-      ast)))
+  (println "math_simplify" ast)
+  (if (s/valid? ::expr_sum_nums ast)
+    (let [conformed (s/conform ::expr_sum_nums ast)
+          simplified (simplify_expr_sum_nums conformed)]
+      (println "" "valid" conformed)
+      (println "" "now" simplified)
+      simplified)
+    ast))
 
 (defn math_eval [ast]
   (->> ast
@@ -77,7 +82,7 @@
       valid      (s/valid? ::expr_sum_nums ast)
       conformed  (s/conform ::expr_sum_nums ast)
       explained  (s/explain ::expr_sum_nums ast)
-      simplified (math_simplify ast)
+      simplified (clojure.walk/postwalk math_simplify ast)
       ]
   (rd/render [:table {:border "1px solid black" }
               [:tr [:td "text"]       [:td [:pre text]]]
