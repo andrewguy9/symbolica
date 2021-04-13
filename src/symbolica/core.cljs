@@ -46,49 +46,80 @@
                 variable = #'[a-zA-Z][a-zA-Z0-9]*'
                 "))
 
-; (s/def ::num (s/cat :tag #{:number} :number (s/and string?))
 (s/def ::num (s/cat :tag #{:number}
                     :number string?))
+(s/def ::var (s/cat :tag #{:variable}
+                    :name string?))
+(def varspec ::var)
+
 (s/def ::sum_nums (s/cat :operator #{:add}
-                         :left (s/and ::num)
+                         :left  (s/and ::num)
                          :right (s/and ::num)))
-(s/def ::expr_sum_nums (s/cat :tag #{:expr}
-                              :sum (s/and ::sum_nums)))
-(defn simplify_expr_sum_nums [conformed]
+(defn simplify_sum_nums [conformed]
   [:number
     (str
       (+
        (-> conformed :left :number int)
        (-> conformed :right :number int)))])
 
-(defn math_simplify [ast]
-  (println "math_simplify" ast)
-  (if (s/valid? ::sum_nums ast)
-    (let [conformed (s/conform ::sum_nums ast)
-          simplified (simplify_expr_sum_nums conformed)]
+(s/def ::expr_sum_nums (s/cat :tag #{:expr}
+                              :sum (s/and ::sum_nums)))
+
+(s/def ::product_order (s/cat :operator #{:mul}
+                         :left  (s/and ::var)
+                         :right (s/and ::num)))
+(def product_order_spec ::product_order)
+(defn simplify_product_order [conformed]
+  [:mul
+   [:number   (-> conformed :right :number)]
+   [:variable (-> conformed :left :name)]])
+
+(s/def ::product (s/cat :operator #{:mul}
+                        :left  (s/and ::num)
+                        :right (s/and ::var)))
+(s/def ::product_sum (s/cat :operator #{:add}
+                            :left (s/and ::product)
+                            :right (s/and ::product)))
+(def product_sum_spec ::product_sum)
+(defn simplify_product_sum [conformed]
+  [:mul
+   [:number
+    (str
+      (+
+       (-> conformed :left  :left :number int)
+       (-> conformed :right :left :number int)))]
+   [:variable (-> conformed :left :right :name)]])
+
+(def simplifications
+  [[::sum_nums simplify_sum_nums]
+   [::product_order simplify_product_order]
+   [::product_sum simplify_product_sum]])
+
+(defn simplify_step [ast spec, reducer]
+  (println "math_simplify" ast spec)
+  (if (s/valid? spec ast)
+    (let [conformed (s/conform spec ast)
+          simplified (reducer conformed)]
       (println "" "valid" conformed)
       (println "" "now" simplified)
       simplified)
     ast))
+
+(defn math_simplify [ast]
+  (reduce (fn [acc [spec reducer]] (simplify_step acc spec reducer)) ast simplifications))
 
 (defn math_eval [ast]
   (->> ast
      (insta/transform
        {:add +, :sub -, :mul *, :div /, :number cljs.tools.reader/read-string :expr identity})))
 
-(let [text "1+2+3" ; "1-2/(3-4)+5*6"
+(let [text "2*x+3*x"; "x*5+2*x+1+2";"1+2+3" ; "1-2/(3-4)+5*6"
       ast        (math text)
-      valid      (s/valid? ::expr_sum_nums ast)
-      conformed  (s/conform ::expr_sum_nums ast)
-      explained  (s/explain ::expr_sum_nums ast)
       simplified (clojure.walk/postwalk math_simplify ast)
       ]
   (rd/render [:table {:border "1px solid black" }
               [:tr [:td "text"]       [:td [:pre text]]]
               [:tr [:td "ast"]        [:td (with-out-str (pp/pprint ast))]]
-              [:tr [:td "valid"]      [:td (with-out-str (pp/pprint valid))]]
-              [:tr [:td "conformed"]  [:td (with-out-str (pp/pprint conformed))]]
-              [:tr [:td "explain"]    [:td (with-out-str (pp/pprint explained))]]
               [:tr [:td "simplified"] [:td (with-out-str (pp/pprint simplified))]]
               ]
              (js/document.getElementById "parse-test")))
