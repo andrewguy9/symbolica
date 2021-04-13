@@ -96,12 +96,12 @@
    [::product_sum simplify_product_sum]])
 
 (defn simplify_step [ast spec, reducer]
-  (println "math_simplify" ast spec)
+  ;(println "math_simplify" ast spec)
   (if (s/valid? spec ast)
     (let [conformed (s/conform spec ast)
           simplified (reducer conformed)]
-      (println "" "valid" conformed)
-      (println "" "now" simplified)
+      ;(println "" "valid" conformed)
+      ;(println "" "now" simplified)
       simplified)
     ast))
 
@@ -113,13 +113,44 @@
      (insta/transform
        {:add +, :sub -, :mul *, :div /, :number cljs.tools.reader/read-string :expr identity})))
 
+(defn math_render [ast]
+  (let [tag (first ast)
+        children (rest ast)
+        ]
+    (case tag
+      :expr     (math_render (first children))
+      :add      (str (math_render (first children)) "*" (math_render (second children)))
+      :sub      (str (math_render (first children)) "-" (math_render (second children)))
+      :mul      (str (math_render (first children)) "*" (math_render (second children)))
+      :div      (str (math_render (first children)) "/" (math_render (second children)))
+      :number   (first children)
+      :variable (first children)
+      ""
+      )))
+
+(defn atom-input [value]
+  [:pre [:input {:type "text"
+                 :value @value
+                 :style {:font-family "monospace"}
+                 :on-change #(reset! value (-> % .-target .-value))}]])
+
+(defn math-table []
+  (let [val (r/atom "1")]
+    (fn []
+      [:table {:border "1px solid black" }
+       [:tr [:td "input"]    [:td [atom-input val]]]
+       [:tr [:td "str"]       [:td [:pre @val]]]
+       [:tr [:td "ast"]        [:td [:pre (with-out-str (pp/pprint (math @val)))]]]
+       [:tr [:td "simplified"] [:td [:pre (with-out-str (pp/pprint (clojure.walk/postwalk math_simplify (math @val))))]]]
+       [:tr [:td "rendered"]   [:td [:pre (math_render (clojure.walk/postwalk math_simplify (math @val)))]]]
+       ])))
+
 (let [text "2*x+3*x"; "x*5+2*x+1+2";"1+2+3" ; "1-2/(3-4)+5*6"
       ast        (math text)
       simplified (clojure.walk/postwalk math_simplify ast)
       ]
-  (rd/render [:table {:border "1px solid black" }
-              [:tr [:td "text"]       [:td [:pre text]]]
-              [:tr [:td "ast"]        [:td (with-out-str (pp/pprint ast))]]
-              [:tr [:td "simplified"] [:td (with-out-str (pp/pprint simplified))]]
-              ]
-             (js/document.getElementById "parse-test")))
+  (rd/render
+    [math-table]
+    (js/document.getElementById "parse-test")))
+
+
