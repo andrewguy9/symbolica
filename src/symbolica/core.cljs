@@ -55,17 +55,16 @@
 (s/def ::expr_sum_nums (s/cat :tag #{:expr}
                               :sum (s/and ::sum_nums)))
 (defn simplify_expr_sum_nums [conformed]
-  [:expr
-   [:number
+  [:number
     (str
       (+
-       (-> conformed :sum :left :number int)
-       (-> conformed :sum :right :number int)))]])
+       (-> conformed :left :number int)
+       (-> conformed :right :number int)))])
 
 (defn math_simplify [ast]
   (println "math_simplify" ast)
-  (if (s/valid? ::expr_sum_nums ast)
-    (let [conformed (s/conform ::expr_sum_nums ast)
+  (if (s/valid? ::sum_nums ast)
+    (let [conformed (s/conform ::sum_nums ast)
           simplified (simplify_expr_sum_nums conformed)]
       (println "" "valid" conformed)
       (println "" "now" simplified)
@@ -77,7 +76,7 @@
      (insta/transform
        {:add +, :sub -, :mul *, :div /, :number cljs.tools.reader/read-string :expr identity})))
 
-(let [text "1+2" ; "1-2/(3-4)+5*6"
+(let [text "1+2+3" ; "1-2/(3-4)+5*6"
       ast        (math text)
       valid      (s/valid? ::expr_sum_nums ast)
       conformed  (s/conform ::expr_sum_nums ast)
