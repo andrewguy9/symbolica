@@ -17,4 +17,6 @@ Shortcut: `clojure -A:build-dev`
 `clojure --main figwheel.main -co dev.cljs.edn --optimizations advanced --compile`
 
 ## production server
-`clojure -m figwheel.main --serve`
+Explicit: `clojure -m figwheel.main --serve`
+
+Shortcut: `clojure -A:build-dev`

@@ -1,5 +1,10 @@
 ^{:css-dirs ["resources/public/css"]}
+^{:hot-reload-cljs false}
 ; Options documented here: https://clojurescript.org/reference/compiler-options
 {:main symbolica.core
  :verbose true
+ :final-output-to docs/main-bundle.js
+ :clean-outputs true
+ :mode :build-once
+ :optimizations :advanced
  }
