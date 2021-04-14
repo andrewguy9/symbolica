@@ -20,3 +20,7 @@ Shortcut: `clojure -A:build-dev`
 Explicit: `clojure -m figwheel.main --serve`
 
 Shortcut: `clojure -A:build-dev`
+
+# Build docs:
+
+`./make_docs.sh` Then commit the changes.
