@@ -90,8 +90,7 @@
   (if (s/valid? spec ast)
     (let [conformed (s/conform spec ast)
           simplified (reducer conformed)]
-      ;(println "" "valid" conformed)
-      ;(println "" "now" simplified)
+      (println "RULE" spec, "BEFORE" ast "AFTER" simplified)
       simplified)
     ast))
 
@@ -128,13 +127,18 @@
 
 (defn math-table []
   (fn []
-    [:table {:border "1px solid black" }
-     [:tr [:td "input"]    [:td [atom-input input]]]
-     [:tr [:td "str"]       [:td [:pre @input]]]
-     [:tr [:td "ast"]        [:td [:pre (with-out-str (pp/pprint (math @input)))]]]
-     [:tr [:td "simplified"] [:td [:pre (with-out-str (pp/pprint (clojure.walk/postwalk math_simplify (math @input))))]]]
-     [:tr [:td "rendered"]   [:td [:pre (math_render (clojure.walk/postwalk math_simplify (math @input)))]]]
-     ]))
+    (let [ast (math @input)
+          log (with-out-str (clojure.walk/postwalk math_simplify ast))
+          simplified (clojure.walk/postwalk math_simplify ast)
+          rendered (math_render simplified)]
+      [:table {:border "1px solid black" }
+       [:tr [:td "input"]      [:td [atom-input input]]]
+       [:tr [:td "str"]        [:td [:pre @input]]]
+       [:tr [:td "ast"]        [:td [:pre (with-out-str (pp/pprint ast))]]]
+       [:tr [:td "log"]        [:td [:pre log]]]
+       [:tr [:td "simplified"] [:td [:pre (with-out-str (pp/pprint simplified))]]]
+       [:tr [:td "rendered"]   [:td [:pre rendered]]]
+     ])))
 
 (let [text "2*x+3*x"; "x*5+2*x+1+2";"1+2+3" ; "1-2/(3-4)+5*6"
       ast        (math text)
