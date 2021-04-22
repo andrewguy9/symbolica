@@ -7,6 +7,7 @@
             [reagent.core :as r]
             [reagent.dom :as rd]
             [clojure.spec.alpha :as s]
+            [symbolica.util :as util]
             ))
 
 (def math
@@ -128,8 +129,7 @@
 (defn math-table []
   (fn []
     (let [ast (math @input)
-          log (with-out-str (clojure.walk/postwalk math_simplify ast))
-          simplified (clojure.walk/postwalk math_simplify ast)
+          [simplified log] (util/with-out-str-return (clojure.walk/postwalk math_simplify ast))
           rendered (math_render simplified)]
       [:table {:border "1px solid black" }
        [:tr [:td "input"]      [:td [atom-input input]]]
@@ -148,4 +148,4 @@
     [math-table]
     (js/document.getElementById "parse-test")))
 
-
+(def infix_expand (macroexpand '(util/infix (1 + 2))))
